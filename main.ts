@@ -236,7 +236,7 @@ class EncryptDocumentsView extends ItemView {
 
         // 标题
         const titleEl = this.containerEl.createEl("div", { cls: "encrypt-title" });
-        titleEl.createEl("h3", { text: "PLAN" });
+        titleEl.createEl("h3", { text: "DOCUMENTS" });
 
         // 刷新按钮
         const refreshBtn = titleEl.createEl("button", { text: "刷新" }); // , cls: 'mod-cta'
