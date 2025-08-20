@@ -11,6 +11,7 @@ import {
     TextComponent,
 } from "obsidian";
 import * as CryptoJS from "crypto-js";
+import { Buffer } from 'buffer';
 
 interface EncryptPluginSettings {
     workingDirectory: string;
