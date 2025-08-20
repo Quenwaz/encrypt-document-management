@@ -109,7 +109,7 @@ export default class EncryptPlugin extends Plugin {
     encryptText(buffer: ArrayBuffer, key: string): ArrayBuffer {
         try {
             const encrypted = CryptoJS.AES.encrypt(
-                CryptoJS.lib.WordArray.create(new Uint8Array(buffer.slice())),
+                CryptoJS.lib.WordArray.create(new Uint8Array(buffer.slice(0))),
                 CryptoJS.lib.WordArray.create(
                     new Uint8Array(Buffer.from(key.slice(16, 48), "utf8"))
                 ),
@@ -134,7 +134,7 @@ export default class EncryptPlugin extends Plugin {
         try {
             const content = CryptoJS.lib.CipherParams.create({
                 ciphertext: CryptoJS.lib.WordArray.create(
-                    new Uint8Array(buffer.slice())
+                    new Uint8Array(buffer.slice(0))
                 ),
             });
 
