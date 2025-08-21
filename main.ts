@@ -128,9 +128,8 @@ export default class EncryptPlugin extends Plugin {
 
 	// 获取文档列表
 	getDocumentFiles(): TFile[] {
-		const activeFile = this.app.workspace.getActiveFile();
-		console.log(activeFile);
-		const files = activeFile ? [activeFile] : []; //this.app.vault.getMarkdownFiles();
+		// const activeFile = this.app.workspace.getActiveFile();
+		const files =this.app.vault.getMarkdownFiles(); //  activeFile ? [activeFile] : [];
 		const docDir = this.settings.documentDirectory.trim();
 
 		if (!docDir) {
@@ -152,7 +151,6 @@ export default class EncryptPlugin extends Plugin {
 				content,
 				this.settings.encryptionKey
 			);
-
 			await this.app.vault.modifyBinary(file, encryptedContent);
 			new Notice(`文件 ${file.basename} 加密成功`);
 		} catch (error) {
@@ -222,7 +220,7 @@ class EncryptDocumentsView extends ItemView {
 		// 清理资源
 	}
 
-	refresh() {
+	async refresh() {
 		this.containerEl.empty();
 
 		// 标题
@@ -278,11 +276,17 @@ class EncryptDocumentsView extends ItemView {
 
 			// 加密按钮
 			const encryptBtn = actionsEl.createEl("button", { text: "加密" }); // , cls: 'mod-warning'
-			encryptBtn.onclick = () => this.plugin.encryptFile(file);
+			encryptBtn.onclick = async () => {
+				await this.plugin.encryptFile(file);
+				await this.app.workspace.getLeaf().detach();
+			}
 
 			// 解密按钮
 			const decryptBtn = actionsEl.createEl("button", { text: "解密" }); //, cls: 'mod-success'
-			decryptBtn.onclick = () => this.plugin.decryptFile(file);
+			decryptBtn.onclick = async () => {
+				await this.plugin.decryptFile(file);
+				await this.app.workspace.getLeaf().openFile(file);
+			}
 		});
 	}
 }
