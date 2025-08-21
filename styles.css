@@ -1,82 +1,365 @@
-/* AES Document Manager Plugin Styles */
+/* Encryption Plugin Enhanced Styles */
 
 .encrypt-documents-view {
-    padding: 16px;
+    padding: 0;
     height: 100%;
-    overflow-y: auto;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    background: var(--background-primary);
 }
 
-.encrypt-title {
+/* Header Styles */
+.encrypt-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 16px;
+    padding: 16px;
+    background: var(--background-secondary);
     border-bottom: 1px solid var(--background-modifier-border);
-    padding-bottom: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 10;
 }
 
-.encrypt-title h3 {
+.encrypt-title-section {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.encrypt-title-icon {
+    width: 24px;
+    height: 24px;
+    color: var(--color-accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.encrypt-title-text {
     margin: 0;
     color: var(--text-normal);
-    font-size: 16px;
+    font-size: 18px;
     font-weight: 600;
 }
 
-.encrypt-warning {
-    background: var(--background-modifier-error);
-    border: 1px solid var(--color-red);
-    border-radius: 6px;
-    padding: 12px;
-    margin-bottom: 16px;
-}
-
-.encrypt-warning p {
-    margin: 0;
-    color: var(--text-error);
-    font-size: 14px;
-}
-
-.encrypt-empty {
-    text-align: center;
-    color: var(--text-muted);
-    padding: 32px 16px;
-}
-
-.encrypt-empty p {
-    font-size: 14px;
-    margin: 0;
-}
-
-.encrypt-file-list {
+.encrypt-header-actions {
     display: flex;
-    flex-direction: column;
     gap: 8px;
 }
 
+.encrypt-action-btn {
+    padding: 8px;
+    border-radius: 6px;
+    border: none;
+    background: var(--background-primary);
+    color: var(--text-normal);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    position: relative;
+}
+
+.encrypt-action-btn:hover {
+    background: var(--background-modifier-hover);
+    transform: translateY(-1px);
+}
+
+.encrypt-action-btn:active {
+    transform: translateY(0);
+}
+
+.encrypt-refresh-btn:hover {
+    color: var(--color-blue);
+}
+
+.encrypt-collapse-btn:hover,
+.encrypt-expand-btn:hover {
+    color: var(--color-green);
+}
+
+/* Warning Styles */
+.encrypt-warning {
+    margin: 16px;
+    background: linear-gradient(135deg, var(--color-red-rgb, 255, 82, 82), rgba(255, 140, 0, 0.1));
+    border: 1px solid var(--color-red);
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    box-shadow: 0 4px 12px rgba(255, 82, 82, 0.2);
+}
+
+.encrypt-warning-icon {
+    color: var(--color-red);
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.encrypt-warning-content {
+    flex: 1;
+}
+
+.encrypt-warning-content p {
+    margin: 0 0 12px 0;
+    color: var(--text-error);
+    font-weight: 500;
+}
+
+.encrypt-warning-btn {
+    background: var(--color-red);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.encrypt-warning-btn:hover {
+    background: var(--color-red-hover, #ff4444);
+    transform: translateY(-1px);
+}
+
+/* Empty State Styles */
+.encrypt-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    text-align: center;
+    color: var(--text-muted);
+    flex: 1;
+}
+
+.encrypt-empty-icon {
+    width: 64px;
+    height: 64px;
+    color: var(--text-faint);
+    margin-bottom: 20px;
+    opacity: 0.5;
+}
+
+.encrypt-empty p {
+    font-size: 16px;
+    margin: 0 0 8px 0;
+    color: var(--text-muted);
+}
+
+.encrypt-empty-subtitle {
+    font-size: 14px !important;
+    color: var(--text-faint) !important;
+}
+
+/* Tree Container */
+.encrypt-tree {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px 0;
+}
+
+/* Tree Lines System */
+.encrypt-tree-lines {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    pointer-events: none;
+}
+
+.encrypt-tree-line {
+    width: 20px;
+    height: 100%;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.encrypt-tree-line-vertical::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: var(--background-modifier-border);
+    transform: translateX(-50%);
+}
+
+.encrypt-tree-line-middle::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 50%;
+    width: 1px;
+    background: var(--background-modifier-border);
+    transform: translateX(-50%);
+}
+
+.encrypt-tree-line-middle::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 10px;
+    height: 1px;
+    background: var(--background-modifier-border);
+}
+
+.encrypt-tree-line-last::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 0;
+    height: 50%;
+    width: 1px;
+    background: var(--background-modifier-border);
+    transform: translateX(-50%);
+}
+
+.encrypt-tree-line-last::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 10px;
+    height: 1px;
+    background: var(--background-modifier-border);
+}
+
+/* Folder Styles */
+.encrypt-folder {
+    position: relative;
+    margin: 2px 0;
+}
+
+.encrypt-folder-header {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    position: relative;
+    padding: 8px 12px 8px 0;
+    background: transparent;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    margin-left: 12px;
+}
+
+.encrypt-folder-header:hover {
+    background: var(--background-modifier-hover);
+}
+
+.encrypt-folder-header.encrypt-folder-collapsed {
+    opacity: 0.8;
+}
+
+.encrypt-folder-toggle {
+    margin-right: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    color: var(--text-muted);
+    transition: transform 0.2s ease;
+}
+
+.encrypt-folder-icon {
+    margin-right: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    color: var(--color-yellow);
+    transition: color 0.2s ease;
+}
+
+.encrypt-folder-name {
+    flex-grow: 1;
+    font-weight: 500;
+    color: var(--text-normal);
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.encrypt-file-count {
+    font-size: 12px;
+    color: var(--text-muted);
+    background: var(--background-modifier-border);
+    padding: 2px 6px;
+    border-radius: 10px;
+    margin-left: 8px;
+    font-weight: 400;
+}
+
+.encrypt-folder-contents {
+    overflow: hidden;
+}
+
+/* File Item Styles */
 .encrypt-file-item {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    padding: 12px;
-    border: 1px solid var(--background-modifier-border);
+    justify-content: space-between;
+    position: relative;
+    padding: 8px 12px 8px 0;
+    margin: 1px 0;
+    margin-left: 12px;
     border-radius: 6px;
-    background: var(--background-secondary);
-    transition: background-color 0.2s ease;
+    background: transparent;
+    transition: all 0.2s ease;
+    cursor: pointer;
 }
 
 .encrypt-file-item:hover {
     background: var(--background-modifier-hover);
-    border-color: var(--background-modifier-border-hover);
+}
+
+.encrypt-file-item:hover .encrypt-file-actions {
+    opacity: 1;
+    transform: translateX(0);
 }
 
 .encrypt-file-info {
     flex: 1;
+    display: flex;
+    align-items: center;
     min-width: 0;
-    margin-right: 12px;
+    position: relative;
+}
+
+.encrypt-file-icon {
+    margin-right: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    color: var(--color-blue);
+    flex-shrink: 0;
 }
 
 .encrypt-file-name {
-    font-weight: 500;
+    font-weight: 400;
     color: var(--text-normal);
     white-space: nowrap;
     overflow: hidden;
@@ -85,76 +368,153 @@
     line-height: 1.4;
 }
 
-.encrypt-file-path {
-    font-size: 12px;
+.encrypt-file-extension {
     color: var(--text-muted);
-    margin-top: 2px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    line-height: 1.3;
+    font-weight: 300;
 }
 
+/* File Actions */
 .encrypt-file-actions {
     display: flex;
-    gap: 6px;
-    flex-shrink: 0;
-}
-
-.encrypt-file-actions button {
-    font-size: 12px;
-    padding: 4px 8px;
-    min-width: 50px;
-    border-radius: 4px;
-    cursor: pointer;
+    gap: 4px;
+    opacity: 0;
+    transform: translateX(8px);
     transition: all 0.2s ease;
 }
 
-.encrypt-file-actions button:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+.encrypt-encrypt-btn,
+.encrypt-decrypt-btn {
+    font-size: 11px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-weight: 500;
 }
 
-.encrypt-file-actions .mod-warning {
+.encrypt-encrypt-btn {
     background: var(--color-orange);
     color: white;
-    border: none;
 }
 
-.encrypt-file-actions .mod-warning:hover {
-    background: var(--color-orange-hover);
+.encrypt-encrypt-btn:hover {
+    background: var(--color-orange-hover, #ff8c42);
+    transform: translateY(-1px);
 }
 
-.encrypt-file-actions .mod-success {
+.encrypt-decrypt-btn {
     background: var(--color-green);
     color: white;
-    border: none;
 }
 
-.encrypt-file-actions .mod-success:hover {
-    background: var(--color-green-hover);
+.encrypt-decrypt-btn:hover {
+    background: var(--color-green-hover, #4caf50);
+    transform: translateY(-1px);
 }
 
-/* 设置页面样式 */
-.setting-item-description ul {
-    margin: 8px 0;
+.encrypt-action-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+/* Spinning Animation */
+.encrypt-spinning {
+    animation: encrypt-spin 1s linear infinite;
+}
+
+@keyframes encrypt-spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Settings Page Enhancements */
+.encrypt-settings-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid var(--background-modifier-border);
+}
+
+.encrypt-settings-icon {
+    width: 32px;
+    height: 32px;
+    color: var(--color-accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.encrypt-settings-header h2 {
+    margin: 0;
+    color: var(--text-normal);
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.encrypt-settings-warning {
+    background: linear-gradient(135deg, rgba(255, 140, 0, 0.1), rgba(255, 193, 7, 0.05));
+    border: 1px solid var(--color-orange);
+    border-radius: 12px;
+    padding: 20px;
+    margin: 24px 0;
+    display: flex;
+    gap: 16px;
+}
+
+.encrypt-settings-warning-icon {
+    color: var(--color-orange);
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.encrypt-settings-warning-content {
+    flex: 1;
+}
+
+.encrypt-settings-warning h3 {
+    color: var(--color-orange);
+    margin: 0 0 12px 0;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.encrypt-settings-warning ul {
+    margin: 0;
     padding-left: 20px;
 }
 
-.setting-item-description li {
-    margin: 4px 0;
-    color: var(--text-muted);
+.encrypt-settings-warning li {
+    margin: 8px 0;
+    color: var(--text-normal);
     font-size: 13px;
+    line-height: 1.4;
 }
 
-.setting-item-description h3 {
-    color: var(--text-error);
-    margin: 16px 0 8px 0;
-    font-size: 14px;
-}
-
-/* 响应式设计 */
+/* Responsive Design */
 @media (max-width: 768px) {
+    .encrypt-header {
+        padding: 12px;
+    }
+    
+    .encrypt-title-text {
+        font-size: 16px;
+    }
+    
     .encrypt-file-item {
         flex-direction: column;
         align-items: flex-start;
@@ -163,21 +523,82 @@
     
     .encrypt-file-info {
         width: 100%;
-        margin-right: 0;
     }
     
     .encrypt-file-actions {
         width: 100%;
         justify-content: flex-end;
+        opacity: 1;
+        transform: none;
+    }
+    
+    .encrypt-tree-line {
+        width: 16px;
     }
 }
 
-/* 加载动画 */
+/* Scrollbar Styling */
+.encrypt-tree::-webkit-scrollbar {
+    width: 6px;
+}
+
+.encrypt-tree::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.encrypt-tree::-webkit-scrollbar-thumb {
+    background: var(--background-modifier-border);
+    border-radius: 3px;
+}
+
+.encrypt-tree::-webkit-scrollbar-thumb:hover {
+    background: var(--background-modifier-border-hover);
+}
+
+/* Enhanced Hover Effects */
+.encrypt-folder-header:hover .encrypt-folder-toggle {
+    color: var(--text-normal);
+    transform: scale(1.1);
+}
+
+.encrypt-folder-header:hover .encrypt-folder-icon {
+    color: var(--color-yellow-hover, #ffd700);
+    transform: scale(1.05);
+}
+
+.encrypt-file-item:hover .encrypt-file-icon {
+    color: var(--color-blue-hover, #4285f4);
+    transform: scale(1.1);
+}
+
+/* Focus States for Accessibility */
+.encrypt-action-btn:focus,
+.encrypt-folder-header:focus,
+.encrypt-file-item:focus {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+}
+
+/* Dark Mode Enhancements */
+.theme-dark .encrypt-warning {
+    background: linear-gradient(135deg, rgba(255, 82, 82, 0.15), rgba(255, 140, 0, 0.08));
+}
+
+.theme-dark .encrypt-settings-warning {
+    background: linear-gradient(135deg, rgba(255, 140, 0, 0.15), rgba(255, 193, 7, 0.08));
+}
+
+/* Animation for smooth folder expansion */
+.encrypt-folder-contents {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Loading States */
 .encrypt-loading {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 32px;
+    padding: 40px;
     color: var(--text-muted);
 }
 
@@ -187,12 +608,7 @@
     height: 20px;
     margin-left: 8px;
     border: 2px solid var(--text-muted);
-    border-top: 2px solid transparent;
+    border-top: 2px solid var(--color-accent);
     border-radius: 50%;
-    animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    animation: encrypt-spin 1s linear infinite;
 }
