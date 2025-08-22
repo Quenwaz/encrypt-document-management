@@ -13,6 +13,8 @@ import {
 } from "obsidian";
 import { Encrypt } from "encrypt";
 
+
+
 interface EncryptPluginSettings {
 	workingDirectory: string;
 	documentDirectory: string;
@@ -65,7 +67,7 @@ export default class EncryptPlugin extends Plugin {
 		// 添加设置选项卡
 		this.addSettingTab(new EncryptSettingTab(this.app, this));
 
-		this.app.workspace.on("file-open", (file: TFile | null) => {
+		this.app.workspace.on("file-open", async (file: TFile | null) => {
 			if (this.onFileOpen != null) {
 				this.onFileOpen(file)
 			}
@@ -73,19 +75,21 @@ export default class EncryptPlugin extends Plugin {
 				return
 
 			if (file !== this.lastActiveFile) {
-				this.decryptFile(file!);
+				await this.decryptFile(file!);
 				if (this.lastActiveFile !== null)
-					this.encryptFile(this.lastActiveFile!);
+					await this.encryptFile(this.lastActiveFile!);
 				this.lastActiveFile = file;
 			}
+
+			await this.app.workspace.getLeaf().openFile(file!);
 		});
 
-		this.app.workspace.on("quit", (tasks) => {
+		this.app.workspace.on("quit", async (tasks) => {
 			if (!this.settings.autoEncryptionDecryption)
 				return
 
 			if (this.lastActiveFile !== null) {
-				this.encryptFile(this.lastActiveFile!);
+				await this.encryptFile(this.lastActiveFile!);
 			}
 		});
 	}

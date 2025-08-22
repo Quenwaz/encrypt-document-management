@@ -356,7 +356,7 @@
 }
 
 .encrypt-file-info {
-    flex: 1;
+    /* flex: 1; */
     display: flex;
     align-items: center;
     min-width: 0;

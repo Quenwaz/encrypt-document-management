@@ -2,8 +2,11 @@
 
 import * as CryptoJS from "crypto-js";
 
-export class Encrypt{
-    static key:string;
+const MAGIC_WORDS = CryptoJS.lib.WordArray.create([0x000273db], 4);
+
+
+export class Encrypt {
+    static key: string;
 
     private static wordArrayToArrayBuffer(wordArray: CryptoJS.lib.WordArray) {
         const { words, sigBytes } = wordArray;
@@ -34,7 +37,7 @@ export class Encrypt{
                 }
             );
 
-            return this.wordArrayToArrayBuffer(encrypted.ciphertext);
+            return this.wordArrayToArrayBuffer(MAGIC_WORDS.clone().concat(encrypted.ciphertext));
         } catch (error) {
             throw new Error("加密失败: " + error.message);
         }
@@ -49,6 +52,20 @@ export class Encrypt{
                 ),
             });
 
+            if (content.ciphertext.sigBytes < 4)
+                throw new Error("不是有效的密文")
+
+
+            const magicGot = content.ciphertext.words[0] >>> 0;
+            if (magicGot !== (MAGIC_WORDS.words[0] >>> 0)) {
+                throw new Error("不是有效的密文")
+            }
+
+            content.ciphertext = CryptoJS.lib.WordArray.create(
+                content.ciphertext.words.slice(1),          // 去掉第一个 word
+                content.ciphertext.sigBytes - MAGIC_WORDS.sigBytes
+            );
+
             const bytes = CryptoJS.AES.decrypt(
                 content,
                 CryptoJS.lib.WordArray.create(
@@ -57,7 +74,7 @@ export class Encrypt{
                 {
                     iv: CryptoJS.enc.Utf8.parse(
                         new TextDecoder().decode(
-                        new TextEncoder().encode(key.slice(0, 16)))
+                            new TextEncoder().encode(key.slice(0, 16)))
                     ),
                     // formatter: CryptoJS.format.OpenSSL,
                     mode: CryptoJS.mode.CBC,
@@ -67,12 +84,12 @@ export class Encrypt{
 
             const decrypted = this.wordArrayToArrayBuffer(bytes); // bytes.toString(CryptoJS.enc.Utf8);
             if (!decrypted) {
-                throw new Error("解密失败，请检查密钥是否正确");
+                throw new Error("请检查密钥是否正确");
             }
             return decrypted;
         } catch (error) {
-            throw new Error("解密失败: " + error.message);
+            throw new Error(error.message);
         }
     }
-    
+
 }
