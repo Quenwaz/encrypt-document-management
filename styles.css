@@ -236,6 +236,28 @@
 	background: var(--background-modifier-border);
 }
 
+/* 移动端连接线调整 */
+@media (max-width: 768px) {
+	.encrypt-tree-line {
+		width: 20px;
+	}
+	
+	.encrypt-tree-line-vertical::before {
+		left: 10px;
+	}
+	
+	.encrypt-tree-line-middle::before,
+	.encrypt-tree-line-last::before {
+		left: 10px;
+	}
+	
+	.encrypt-tree-line-middle::after,
+	.encrypt-tree-line-last::after {
+		left: 10px;
+		width: 10px;
+	}
+}
+
 /* Folder Styles */
 .encrypt-folder {
     position: relative;
@@ -509,34 +531,82 @@
         font-size: 16px;
     }
     
-    .encrypt-file-item {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 8px;
-        padding-left: 16px;
-    }
-    
-    .encrypt-file-info {
-        width: 100%;
-    }
-    
-    .encrypt-file-actions {
-        width: 100%;
-        justify-content: flex-end;
-        opacity: 1;
-        transform: none;
-    }
-    
-    .encrypt-folder-header {
-        padding-left: 16px;
+    /* 移动端缩进调整 */
+    .encrypt-indent-container {
+        width: auto;
     }
     
     .encrypt-tree-line {
         width: 20px;
     }
     
-    .encrypt-indent-container {
-        width: auto !important;
+    .encrypt-tree-line-middle::after,
+    .encrypt-tree-line-last::after {
+        width: 10px;
+    }
+    
+    .encrypt-folder-header {
+        padding: 8px 12px 8px 8px;
+        min-height: 40px;
+    }
+    
+    .encrypt-file-item {
+        padding: 8px 12px 8px 8px;
+        min-height: 40px;
+    }
+    
+    /* 移动端保持层级缩进 */
+    .encrypt-file-item .encrypt-indent-container {
+        display: inline-block;
+    }
+    
+    .encrypt-folder-header .encrypt-indent-container {
+        display: inline-block;
+    }
+    
+    /* 文件操作按钮在移动端始终显示 */
+    .encrypt-file-actions {
+        opacity: 1 !important;
+        transform: none !important;
+        margin-top: 8px;
+        width: 100%;
+        justify-content: flex-end;
+    }
+    
+    /* 移动端文件信息布局调整 */
+    .encrypt-file-info {
+        width: 100%;
+        margin-bottom: 8px;
+    }
+    
+    /* 增大移动端的触摸区域 */
+    .encrypt-action-btn {
+        min-height: 36px;
+        min-width: 36px;
+        padding: 8px 12px;
+    }
+    
+    .encrypt-encrypt-btn,
+    .encrypt-decrypt-btn {
+        padding: 6px 12px;
+        min-height: 32px;
+        font-size: 12px;
+    }
+    
+    /* 移动端文件夹切换按钮 */
+    .encrypt-folder-toggle {
+        width: 20px;
+        height: 20px;
+    }
+    
+    .encrypt-folder-icon {
+        width: 20px;
+        height: 20px;
+    }
+    
+    .encrypt-file-icon {
+        width: 18px;
+        height: 18px;
     }
 }
 
