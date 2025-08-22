@@ -172,83 +172,74 @@
 }
 
 /* Tree Lines System */
-.encrypt-tree-lines {
-    display: flex;
-    align-items: center;
-    height: 100%;
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    pointer-events: none;
+.encrypt-indent-container {
+	position: relative;
+	display: inline-block;
+	height: 20px;
+	flex-shrink: 0;
 }
 
 .encrypt-tree-line {
-    width: 20px;
-    height: 100%;
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+	position: absolute;
+	top: 0;
+	width: 24px;
+	height: 20px;
 }
 
 .encrypt-tree-line-vertical::before {
-    content: '';
-    position: absolute;
-    left: 50%;
-    top: 0;
-    bottom: 0;
-    width: 1px;
-    background: var(--background-modifier-border);
-    transform: translateX(-50%);
+	content: '';
+	position: absolute;
+	left: 12px;
+	top: 0;
+	bottom: 0;
+	width: 1px;
+	background: var(--background-modifier-border);
 }
 
 .encrypt-tree-line-middle::before {
-    content: '';
-    position: absolute;
-    left: 50%;
-    top: 0;
-    bottom: 50%;
-    width: 1px;
-    background: var(--background-modifier-border);
-    transform: translateX(-50%);
+	content: '';
+	position: absolute;
+	left: 12px;
+	top: 0;
+	height: 10px;
+	width: 1px;
+	background: var(--background-modifier-border);
 }
 
 .encrypt-tree-line-middle::after {
-    content: '';
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    width: 10px;
-    height: 1px;
-    background: var(--background-modifier-border);
+	content: '';
+	position: absolute;
+	left: 12px;
+	top: 10px;
+	width: 12px;
+	height: 1px;
+	background: var(--background-modifier-border);
 }
 
 .encrypt-tree-line-last::before {
-    content: '';
-    position: absolute;
-    left: 50%;
-    top: 0;
-    height: 50%;
-    width: 1px;
-    background: var(--background-modifier-border);
-    transform: translateX(-50%);
+	content: '';
+	position: absolute;
+	left: 12px;
+	top: 0;
+	height: 10px;
+	width: 1px;
+	background: var(--background-modifier-border);
 }
 
 .encrypt-tree-line-last::after {
-    content: '';
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    width: 10px;
-    height: 1px;
-    background: var(--background-modifier-border);
+	content: '';
+	position: absolute;
+	left: 12px;
+	top: 10px;
+	width: 12px;
+	height: 1px;
+	background: var(--background-modifier-border);
 }
 
 /* Folder Styles */
 .encrypt-folder {
     position: relative;
-    margin: 2px 0;
+    margin: 1px 0;
 }
 
 .encrypt-folder-header {
@@ -256,11 +247,11 @@
     align-items: center;
     cursor: pointer;
     position: relative;
-    padding: 8px 12px 8px 0;
+    padding: 6px 12px 6px 16px;
     background: transparent;
     border-radius: 6px;
     transition: all 0.2s ease;
-    margin-left: 12px;
+    min-height: 32px;
 }
 
 .encrypt-folder-header:hover {
@@ -280,6 +271,7 @@
     height: 16px;
     color: var(--text-muted);
     transition: transform 0.2s ease;
+    flex-shrink: 0;
 }
 
 .encrypt-folder-icon {
@@ -291,6 +283,7 @@
     height: 18px;
     color: var(--color-yellow);
     transition: color 0.2s ease;
+    flex-shrink: 0;
 }
 
 .encrypt-folder-name {
@@ -309,6 +302,7 @@
     border-radius: 10px;
     margin-left: 8px;
     font-weight: 400;
+    flex-shrink: 0;
 }
 
 .encrypt-folder-contents {
@@ -321,13 +315,13 @@
     align-items: center;
     justify-content: space-between;
     position: relative;
-    padding: 8px 12px 8px 0;
+    padding: 6px 12px 6px 16px;
     margin: 1px 0;
-    margin-left: 12px;
     border-radius: 6px;
     background: transparent;
     transition: all 0.2s ease;
     cursor: pointer;
+    min-height: 32px;
 }
 
 .encrypt-file-item:hover {
@@ -519,6 +513,7 @@
         flex-direction: column;
         align-items: flex-start;
         gap: 8px;
+        padding-left: 16px;
     }
     
     .encrypt-file-info {
@@ -532,8 +527,16 @@
         transform: none;
     }
     
+    .encrypt-folder-header {
+        padding-left: 16px;
+    }
+    
     .encrypt-tree-line {
-        width: 16px;
+        width: 20px;
+    }
+    
+    .encrypt-indent-container {
+        width: auto !important;
     }
 }
 

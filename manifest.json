@@ -1,6 +1,6 @@
 {
     "id": "encrypt-document-manager",
-    "name": "Encryption Document Management",
+    "name": "EnDocMan",
     "version": "1.0.0",
     "minAppVersion": "0.15.0",
     "description": "A plugin for AES encryption and decryption of documents with sidebar management interface",

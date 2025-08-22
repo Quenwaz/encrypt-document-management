@@ -49,14 +49,14 @@ export default class EncryptPlugin extends Plugin {
 		);
 
 		// 添加侧边栏图标
-		this.addRibbonIcon("shield", "Encryption Document Management", () => {
+		this.addRibbonIcon("shield", "EnDocMan", () => {
 			this.activateView();
 		});
 
 		// 添加命令
 		this.addCommand({
 			id: "open-encrypt-documents",
-			name: "Open Encryption Document Management",
+			name: "Open EnDocMan",
 			callback: () => {
 				this.activateView();
 			},
@@ -65,7 +65,7 @@ export default class EncryptPlugin extends Plugin {
 		// 添加设置选项卡
 		this.addSettingTab(new EncryptSettingTab(this.app, this));
 
-		this.app.workspace.on("file-open", async (file: TFile | null) => {
+		this.app.workspace.on("file-open", (file: TFile | null) => {
 			if (this.onFileOpen != null) {
 				this.onFileOpen(file)
 			}
@@ -73,19 +73,19 @@ export default class EncryptPlugin extends Plugin {
 				return
 
 			if (file !== this.lastActiveFile) {
-				await this.decryptFile(file!);
+				this.decryptFile(file!);
 				if (this.lastActiveFile !== null)
-					await this.encryptFile(this.lastActiveFile!);
+					this.encryptFile(this.lastActiveFile!);
 				this.lastActiveFile = file;
 			}
 		});
 
-		this.app.workspace.on("quit", async (tasks) => {
+		this.app.workspace.on("quit", (tasks) => {
 			if (!this.settings.autoEncryptionDecryption)
 				return
 
 			if (this.lastActiveFile !== null) {
-				await this.encryptFile(this.lastActiveFile!);
+				this.encryptFile(this.lastActiveFile!);
 			}
 		});
 	}
@@ -195,7 +195,7 @@ class EncryptDocumentsView extends ItemView {
 	}
 
 	getDisplayText() {
-		return "Encryption Document Management";
+		return "EnDocMan";
 	}
 
 	getIcon() {
@@ -254,7 +254,7 @@ class EncryptDocumentsView extends ItemView {
 		setIcon(iconEl, "shield");
 
 		titleSection.createEl("h3", { 
-			text: "文档加密管理",
+			text: "EnDocMan",
 			cls: "encrypt-title-text"
 		});
 
@@ -566,15 +566,20 @@ class EncryptDocumentsView extends ItemView {
 	}
 
 	private addTreeLines(element: HTMLElement, depth: number, isLast: boolean, isFile: boolean) {
-		const linesContainer = element.createEl("div", {
-			cls: "encrypt-tree-lines",
+		// 添加缩进容器
+		const indentContainer = element.createEl("div", {
+			cls: "encrypt-indent-container",
 		});
-
+		
+		// 设置缩进宽度
+		indentContainer.style.width = `${depth * 24}px`;
+		
 		// 添加每一层的连接线
 		for (let i = 0; i < depth; i++) {
-			const line = linesContainer.createEl("div", {
+			const line = indentContainer.createEl("div", {
 				cls: "encrypt-tree-line",
 			});
+			line.style.left = `${i * 24}px`;
 			
 			if (i === depth - 1) {
 				// 最后一层的连接线
@@ -655,7 +660,7 @@ class EncryptSettingTab extends PluginSettingTab {
 		const headerEl = containerEl.createEl("div", { cls: "encrypt-settings-header" });
 		const iconEl = headerEl.createEl("div", { cls: "encrypt-settings-icon" });
 		setIcon(iconEl, "shield");
-		headerEl.createEl("h2", { text: "Encryption 加解密插件设置" });
+		headerEl.createEl("h2", { text: "EnDocMan Settings" });
 
 		// 工作目录设置
 		new Setting(containerEl)
