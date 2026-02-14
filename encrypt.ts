@@ -19,9 +19,26 @@ export class Encrypt {
         return buf;
     }
 
-    // Encryption 加密
     static encryptText(buffer: ArrayBuffer, key: string): ArrayBuffer {
         try {
+            const magicUint8 = new Uint8Array(this.wordArrayToArrayBuffer(MAGIC_WORDS));
+            const inputUint8 = new Uint8Array(buffer);
+
+            let alreadyEncrypted = inputUint8.length >= magicUint8.length;
+            if (alreadyEncrypted) {
+                for (let i = 0; i < magicUint8.length; i++) {
+                    if (inputUint8[i] !== magicUint8[i]) {
+                        alreadyEncrypted = false;
+                        break;
+                    }
+                }
+            }
+
+            if (alreadyEncrypted) {
+                console.log("已经是密文，跳过加密");
+                return buffer;
+            }
+
             const encrypted = CryptoJS.AES.encrypt(
                 CryptoJS.lib.WordArray.create(new Uint8Array(buffer.slice(0))),
                 CryptoJS.lib.WordArray.create(

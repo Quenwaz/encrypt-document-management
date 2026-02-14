@@ -16,15 +16,15 @@ import { Encrypt } from "encrypt";
 
 
 interface EncryptPluginSettings {
-	workingDirectory: string;
 	documentDirectory: string;
+	ignoreList: string[];
 	encryptionKey: string;
 	autoEncryptionDecryption: boolean;
 }
 
 const DEFAULT_SETTINGS: EncryptPluginSettings = {
-	workingDirectory: "",
 	documentDirectory: "",
+	ignoreList: [],
 	encryptionKey: "",
 	autoEncryptionDecryption: false,
 };
@@ -39,6 +39,7 @@ const VIEW_TYPE_ENCRYPT_DOCUMENTS = "encryption-documents-view";
 export default class EncryptPlugin extends Plugin {
 	settings: EncryptPluginSettings;
 	private lastActiveFile: TFile | null = null;
+	private isProcessing: boolean = false;
 	private onFileOpen: (file: TFile | null) => any;
 
 	async onload() {
@@ -68,20 +69,33 @@ export default class EncryptPlugin extends Plugin {
 		this.addSettingTab(new EncryptSettingTab(this.app, this));
 
 		this.app.workspace.on("file-open", async (file: TFile | null) => {
+			if (file == null || this.isProcessing || !this.settings.autoEncryptionDecryption){
+				return
+			}
+
+			if (this.settings.ignoreList.some(str => new RegExp(str, 'gi').test(file.path))){
+				console.log(`文件${file.path}被过滤`);
+				return;
+			}
+
 			if (this.onFileOpen != null) {
 				this.onFileOpen(file)
 			}
-			if (!this.settings.autoEncryptionDecryption)
-				return
 
-			if (file !== this.lastActiveFile) {
-				await this.decryptFile(file!);
-				if (this.lastActiveFile !== null)
-					await this.encryptFile(this.lastActiveFile!);
+			try {
+				this.isProcessing = true; 
+				if (this.lastActiveFile && this.lastActiveFile !== file) {
+					await this.encryptFile(this.lastActiveFile);
+				}
+
+				await this.decryptFile(file);
+
+			} catch (e) {
+				new Notice(`加解密: ${e.message}`);
+			} finally {
 				this.lastActiveFile = file;
+				this.isProcessing = false; 
 			}
-
-			await this.app.workspace.getLeaf().openFile(file!);
 		});
 
 		this.app.workspace.on("quit", async (tasks) => {
@@ -137,21 +151,27 @@ export default class EncryptPlugin extends Plugin {
 
 	// 获取文档列表
 	getDocumentFiles(): TFile[] {
-		const files = this.app.vault.getMarkdownFiles();
+		let files = this.app.vault.getMarkdownFiles();
 		const docDir = this.settings.documentDirectory.trim();
+		files = files.filter((file) => 
+  			!this.settings.ignoreList.some(str => 
+				new RegExp(str, 'gi').test(file.path)
+			)
+		)
 
 		if (!docDir) {
 			return files;
 		}
 
-		return files.filter((file) => file.path.startsWith(docDir));
+		return files.filter((file) => 
+			file.path.startsWith(docDir)
+		);
 	}
 
 	async encryptFile(file: TFile) {
 		try {
 			const content = await this.app.vault.readBinary(file);
 			if (content.byteLength == 0) {
-				new Notice("文件为空");
 				return;
 			}
 			const encryptedContent = Encrypt.encryptText(
@@ -159,9 +179,8 @@ export default class EncryptPlugin extends Plugin {
 				this.settings.encryptionKey
 			);
 			await this.app.vault.modifyBinary(file, encryptedContent);
-			new Notice(`文件 ${file.basename} 加密成功`);
 		} catch (error) {
-			new Notice(`加密失败: ${error.message}`);
+			throw error;
 		}
 	}
 
@@ -173,9 +192,8 @@ export default class EncryptPlugin extends Plugin {
 				this.settings.encryptionKey
 			);
 			await this.app.vault.modifyBinary(file, decrypted);
-			new Notice(`文件 ${file.basename} 解密成功`);
 		} catch (error) {
-			new Notice(`解密失败: ${error.message}`);
+			throw error;
 		}
 	}
 }
@@ -666,20 +684,6 @@ class EncryptSettingTab extends PluginSettingTab {
 		setIcon(iconEl, "shield");
 		headerEl.createEl("h2", { text: "EnDocMan Settings" });
 
-		// 工作目录设置
-		new Setting(containerEl)
-			.setName("工作目录")
-			.setDesc("设置插件的工作目录（可选）")
-			.addText((text) =>
-				text
-					.setPlaceholder("例如: work/")
-					.setValue(this.plugin.settings.workingDirectory)
-					.onChange(async (value) => {
-						this.plugin.settings.workingDirectory = value;
-						await this.plugin.saveSettings();
-					})
-			);
-
 		// 文档目录设置
 		new Setting(containerEl)
 			.setName("文档所在目录")
@@ -694,6 +698,7 @@ class EncryptSettingTab extends PluginSettingTab {
 					})
 			);
 
+			
 		// 是否自动加解密
 		new Setting(containerEl)
 			.setName("自动加解密")
@@ -707,10 +712,24 @@ class EncryptSettingTab extends PluginSettingTab {
 					});
 			});
 
+		new Setting(containerEl)
+			.setName("忽略清单")
+			.setDesc("设置哪些文件或目录不加密")
+			.addTextArea((text) =>
+				text
+					.setPlaceholder("例如: work*\ntestfile")
+					.setValue(this.plugin.settings.ignoreList.join("\n"))
+					.onChange(async (value) => {
+						value = value.trim()
+						this.plugin.settings.ignoreList = value.length > 0 ? value.split("\n") :[];
+						await this.plugin.saveSettings();
+					})
+			);
+
 		// 加密密钥设置
 		new Setting(containerEl)
 			.setName("加密密钥")
-			.setDesc("设置 Encryption 加密的密钥（请妥善保管，丢失将无法解密文件）")
+			.setDesc("设置加密的密钥")
 			.addText((text) => {
 				text.inputEl.type = "password";
 				text.setPlaceholder("输入加密密钥")
@@ -723,7 +742,7 @@ class EncryptSettingTab extends PluginSettingTab {
 
 		// 生成随机密钥按钮
 		new Setting(containerEl)
-			.setName("生成随机密钥")
+			.setName("生成密钥")
 			.setDesc("根据用户名及密码生成密钥")
 			.addText((text) => {
 				text.setPlaceholder("输入用户名")
@@ -742,7 +761,7 @@ class EncryptSettingTab extends PluginSettingTab {
 			})
 			.addButton((button) =>
 				button
-					.setButtonText("生成密钥")
+					.setButtonText("生成")
 					.setCta()
 					.onClick(async () => {
 						if (!this.username?.trim() || !this.password?.trim()) {
@@ -763,25 +782,5 @@ class EncryptSettingTab extends PluginSettingTab {
 					})
 			);
 
-		// 安全提示
-		const warningEl = containerEl.createEl("div", {
-			cls: "encrypt-settings-warning",
-		});
-		
-		const warningIcon = warningEl.createEl("div", {
-			cls: "encrypt-settings-warning-icon",
-		});
-		setIcon(warningIcon, "alert-triangle");
-		
-		const warningContent = warningEl.createEl("div", {
-			cls: "encrypt-settings-warning-content",
-		});
-		
-		warningContent.createEl("h3", { text: "⚠️ 安全提示：" });
-		const ul = warningContent.createEl("ul");
-		ul.createEl("li", { text: "请务必备份您的加密密钥，丢失密钥将无法恢复加密文件" });
-		ul.createEl("li", { text: "建议定期更换加密密钥以提高安全性" });
-		ul.createEl("li", { text: "加密后的文件在 Obsidian 中将显示为加密内容" });
-		ul.createEl("li", { text: "请确保在安全的环境中使用此插件" });
 	}
 }
